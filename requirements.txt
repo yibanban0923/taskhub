@@ -6,3 +6,7 @@ alembic
 pydantic-settings
 python-dotenv
 cryptography
+email-validator
+pwdlib[argon2]
+PyJWT
+python-multipart
