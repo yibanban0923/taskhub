@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.models.task import TaskPriority, TaskStatus
 
@@ -20,6 +20,13 @@ class TaskUpdate(BaseModel):
     priority: TaskPriority | None = None
     due_date: datetime | None = None
 
+    @model_validator(mode="after")
+    def validate_non_nullable_fields(self):
+        for field_name in ("title", "status", "priority"):
+            if field_name in self.model_fields_set and getattr(self, field_name) is None:
+                raise ValueError(f"{field_name} cannot be null")
+        return self
+
 
 class TaskRead(BaseModel):
     id: int
@@ -31,7 +38,6 @@ class TaskRead(BaseModel):
     user_id: int
     created_at: datetime
     updated_at: datetime
-
     model_config = ConfigDict(from_attributes=True)
 
 
